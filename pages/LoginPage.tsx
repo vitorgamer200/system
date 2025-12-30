@@ -18,7 +18,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const users = StorageService.getUsers();
-    const user = users.find(u => u.email === email);
+    // Busca insensível a maiúsculas/minúsculas
+    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
 
     if (!user) {
       setMessage({ text: 'E-mail não cadastrado.', type: 'error' });
@@ -39,7 +40,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     }
 
     const users = StorageService.getUsers();
-    if (users.find(u => u.email === email)) {
+    if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
       setMessage({ text: 'E-mail já cadastrado.', type: 'error' });
       return;
     }

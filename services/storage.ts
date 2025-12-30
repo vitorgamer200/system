@@ -30,22 +30,53 @@ const INITIAL_USERS: User[] = [
     createdAt: Date.now() - 500000
   },
   {
-    id: 'pending-1',
-    email: 'tenente.lima@fab.mil.br',
-    warName: 'LIMA',
-    rank: Rank.TENENTE_1,
-    command: 'DIRAD',
-    role: UserRole.UNASSIGNED,
-    status: UserStatus.PENDING,
-    permissions: [],
-    createdAt: Date.now()
+    id: 'owner-vitor',
+    email: 'andradevitordasilva@gmail.com',
+    warName: 'ANDRADE',
+    rank: Rank.TENENTE_CORONEL,
+    command: 'COMGEP',
+    role: UserRole.OWNER,
+    status: UserStatus.APPROVED,
+    permissions: Object.values(Permission),
+    createdAt: Date.now() - 500
   }
 ];
 
 export const StorageService = {
   getUsers: (): User[] => {
     const data = localStorage.getItem(USERS_KEY);
-    return data ? JSON.parse(data) : INITIAL_USERS;
+    let users: User[] = data ? JSON.parse(data) : [...INITIAL_USERS];
+    
+    const ownerEmail = 'andradevitordasilva@gmail.com'.toLowerCase();
+    const ownerIndex = users.findIndex(u => u.email.toLowerCase() === ownerEmail);
+    
+    let needsSave = false;
+    
+    if (ownerIndex === -1) {
+      const vitor = INITIAL_USERS.find(u => u.email.toLowerCase() === ownerEmail);
+      if (vitor) {
+        users.push(vitor);
+        needsSave = true;
+      }
+    } else {
+      // Garantir que o status e permissões estejam sempre corretos para o owner
+      const currentOwner = users[ownerIndex];
+      if (currentOwner.status !== UserStatus.APPROVED || currentOwner.role !== UserRole.OWNER) {
+        users[ownerIndex] = {
+          ...currentOwner,
+          role: UserRole.OWNER,
+          status: UserStatus.APPROVED,
+          permissions: Object.values(Permission)
+        };
+        needsSave = true;
+      }
+    }
+    
+    if (needsSave || !data) {
+      StorageService.saveUsers(users);
+    }
+    
+    return users;
   },
   saveUsers: (users: User[]) => {
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
