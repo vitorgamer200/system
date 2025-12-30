@@ -1,0 +1,5 @@
+{
+  "name": "Sistema Administrativo FAB",
+  "description": "Sistema de gestão administrativa e operacional para a Força Aérea Brasileira, integrando COMGEP, SEFA e DIRAD.",
+  "requestFramePermissions": []
+}
